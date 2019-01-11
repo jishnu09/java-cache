@@ -1,0 +1,68 @@
+<!-- https://www.playframework.com/documentation/latest/SettingsLogger -->
+<configuration>
+
+  <conversionRule conversionWord="coloredLevel" converterClass="play.api.libs.logback.ColoredLevel" />
+
+  <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+    <file>${application.home:-.}/logs/cache-holder.log</file>
+    <encoder>
+      <pattern>%date [%level] from %logger in %thread - %message%n%xException</pattern>
+    </encoder>
+  </appender>
+
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%coloredLevel %logger{15} :%line - %message%n%xException{10}</pattern>
+    </encoder>
+  </appender>
+
+  <appender name="ASYNCFILE" class="ch.qos.logback.classic.AsyncAppender">
+    <appender-ref ref="FILE" />
+  </appender>
+
+  <appender name="ASYNCSTDOUT" class="ch.qos.logback.classic.AsyncAppender">
+    <appender-ref ref="STDOUT" />
+  </appender>
+  
+  <appender name="FILE-AUDIT"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+	         <level>INFO</level>	         
+        </filter>
+        <file>${application.home:-.}/logs/cache-holder-logback.log</file>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <Pattern>
+                <!--				%d{yyyy-MM-dd HH:mm:ss} - %msg%n-->
+                %boldBlue(%d{yyyy-MM-dd HH:mm:ss}) - %highlight(%-5level) %green([%thread]) %cyan(%logger) %magenta(.%M:%line) - %msg%n
+            </Pattern>
+        </encoder>
+        
+<!--        <withJansi>true</withJansi>-->
+        
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- rollover daily -->
+            <fileNamePattern>${application.home:-.}/logs/archived/cache-holder-logback.%d{yyyy-MM-dd}.log.zip
+            </fileNamePattern>
+<!--            <maxFileSize>1MB</maxFileSize>-->
+<!--            <timeBasedFileNamingAndTriggeringPolicy
+                class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+                <maxFileSize>1MB</maxFileSize>
+                
+            </timeBasedFileNamingAndTriggeringPolicy>-->
+        </rollingPolicy>
+
+    </appender>
+
+  <logger name="play" level="INFO" />
+  <logger name="application" level="DEBUG" />
+
+  <!-- Off these ones as they are annoying, and anyway we manage configuration ourselves -->
+ 
+  <root level="INFO">
+    <appender-ref ref="ASYNCFILE" />
+    <appender-ref ref="ASYNCSTDOUT" />
+    <appender-ref ref="FILE-AUDIT"/>
+  </root>
+
+</configuration>
